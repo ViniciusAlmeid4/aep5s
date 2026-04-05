@@ -1,16 +1,17 @@
 package org.cesumar.models.solicitacao;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
-abstract public class Solicitacao {
+public class Solicitacao {
 
     private UUID id;
     private CategoriaSolicitacao categoria;
     private String descricao;
     private String anexoUrl; // pode ser null
     private String localizacao;
-    private String nomeSolicitante; // null se anônimo
+    private UUID solicitante; // null se anônimo
     private LocalDateTime dtCriacao;
     private Boolean isAnonima;
 
@@ -20,7 +21,7 @@ abstract public class Solicitacao {
             String descricao,
             String anexoUrl,
             String localizacao,
-            String nomeSolicitante,
+            UUID solicitante,
             Boolean anonima,
             LocalDateTime dtCriacao
     ) {
@@ -29,7 +30,8 @@ abstract public class Solicitacao {
         this.descricao = descricao;
         this.anexoUrl = anexoUrl;
         this.localizacao = localizacao;
-        this.nomeSolicitante = nomeSolicitante;
+        this.solicitante = solicitante;
+        this.isAnonima = anonima;
         this.dtCriacao = dtCriacao;
     }
 
@@ -73,12 +75,18 @@ abstract public class Solicitacao {
         this.localizacao = localizacao;
     }
 
-    public String getNomeSolicitante() {
-        return nomeSolicitante;
+    public Optional<UUID> getSolicitante() {
+        Optional<UUID> sol;
+        if (!isAnonima) {
+            sol = Optional.ofNullable(solicitante);
+        } else {
+            sol = Optional.empty();
+        }
+        return sol;
     }
 
-    public void setNomeSolicitante(String nomeSolicitante) {
-        this.nomeSolicitante = nomeSolicitante;
+    public void setSolicitante(UUID solicitante) {
+        this.solicitante = this.solicitante;
     }
 
     public LocalDateTime getDtCriacao() {

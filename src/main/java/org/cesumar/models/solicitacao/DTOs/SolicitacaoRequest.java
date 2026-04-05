@@ -2,12 +2,14 @@ package org.cesumar.models.solicitacao.DTOs;
 
 import org.cesumar.models.solicitacao.CategoriaSolicitacao;
 
+import java.util.UUID;
+
 public class SolicitacaoRequest {
     private CategoriaSolicitacao categoria;
     private String descricao;
     private String anexoUrl; // pode ser null
     private String localizacao;
-    private String nomeSolicitante; // null se anônimo
+    private UUID solicitante; // null se anônimo
     private Boolean isAnonima;
 
     public SolicitacaoRequest(CategoriaSolicitacao categoria, String descricao, String anexoUrl, String localizacao, String nomeSolicitante, Boolean isAnonima) {
@@ -15,7 +17,7 @@ public class SolicitacaoRequest {
         this.descricao = descricao;
         this.anexoUrl = anexoUrl;
         this.localizacao = localizacao;
-        this.nomeSolicitante = nomeSolicitante;
+        this.solicitante = solicitante;
         this.isAnonima = isAnonima;
         this.validar();
     }
@@ -52,15 +54,15 @@ public class SolicitacaoRequest {
         this.localizacao = localizacao;
     }
 
-    public String getNomeSolicitante() {
-        return nomeSolicitante;
+    public UUID getSolicitante() {
+        return solicitante;
     }
 
-    public void setNomeSolicitante(String nomeSolicitante) {
-        this.nomeSolicitante = nomeSolicitante;
+    public void setSolicitante(UUID solicitante) {
+        this.solicitante = solicitante;
     }
 
-    public Boolean getAnonima() {
+    public Boolean isAnonima() {
         return isAnonima;
     }
 

@@ -14,6 +14,7 @@ public class DatabaseConfig {
 
     public static Connection getConnection() throws SQLException {
         if (conn == null) {
+            init();
             conn = DriverManager.getConnection(URL, USER, PASSWORD);
         }
         return conn;
