@@ -12,7 +12,7 @@ public class SolicitacaoRequest {
     private UUID solicitante; // null se anônimo
     private Boolean isAnonima;
 
-    public SolicitacaoRequest(CategoriaSolicitacao categoria, String descricao, String anexoUrl, String localizacao, String nomeSolicitante, Boolean isAnonima) {
+    public SolicitacaoRequest(CategoriaSolicitacao categoria, String descricao, String anexoUrl, String localizacao, UUID solicitante, Boolean isAnonima) {
         this.categoria = categoria;
         this.descricao = descricao;
         this.anexoUrl = anexoUrl;
@@ -75,7 +75,7 @@ public class SolicitacaoRequest {
         if (descricao == null || descricao.isBlank()) throw new IllegalArgumentException("Descrição obrigatória");
         if (localizacao == null || localizacao.isBlank()) throw new IllegalArgumentException("Localização obrigatória");
 
-        if (!isAnonima && (nomeSolicitante == null || nomeSolicitante.isBlank())) {
+        if (!isAnonima && solicitante == null) {
             throw new IllegalArgumentException("Nome obrigatório para solicitações identificadas");
         }
     }

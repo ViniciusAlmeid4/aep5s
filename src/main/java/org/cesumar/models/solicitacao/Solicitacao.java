@@ -97,7 +97,7 @@ public class Solicitacao {
         this.dtCriacao = dtCriacao;
     }
 
-    public Boolean getAnonima() {
+    public Boolean isAnonima() {
         return isAnonima;
     }
 

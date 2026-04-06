@@ -10,20 +10,14 @@ public class DatabaseConfig {
     private static final String URL = "jdbc:h2:mem:solicitacoes;DB_CLOSE_DELAY=-1";
     private static final String USER = "sa";
     private static final String PASSWORD = "";
-    private static Connection conn = null;
 
     public static Connection getConnection() throws SQLException {
-        if (conn == null) {
-            init();
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-        }
-        return conn;
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    private static void init() {
+    public static void init() {
         try (
-                Connection conn = DatabaseConfig.getConnection();
-                Statement stmt = conn.createStatement();
+                Statement stmt = getConnection().createStatement();
         ) {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS solicitacao (
@@ -33,7 +27,7 @@ public class DatabaseConfig {
                             anexo_url VARCHAR(255),
                             localizacao VARCHAR(255),
                             anonima BOOLEAN,
-                            nome_solicitante VARCHAR(255),
+                            solicitante UUID,
                             data_criacao TIMESTAMP
                         )
                     """);

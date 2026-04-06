@@ -13,11 +13,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SolicitacaoRepository {
-    public static Solicitacao save(SolicitacaoRequest s) throws Exception {
+    public Solicitacao save(SolicitacaoRequest s) throws Exception {
         String sql = """
                     INSERT INTO solicitacao (
                         id, categoria, descricao, anexo_url, localizacao,
-                        anonima, nome_solicitante, data_criacao
+                        anonima, solicitante, data_criacao
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
@@ -36,7 +36,9 @@ public class SolicitacaoRepository {
             ps.setObject(7, s.getSolicitante());
             ps.setTimestamp(8, Timestamp.valueOf(agora));
 
-            if (ps.execute()) {
+            int rows = ps.executeUpdate();
+
+            if (rows == 1) {
                 return new Solicitacao(
                         id,
                         s.getCategoria(),
@@ -48,7 +50,7 @@ public class SolicitacaoRepository {
                         agora
                 );
             } else {
-                throw new SQLException("Erro ao inserir registro no banco de dados.");
+                throw new SQLException("Erro ao inserir registro.");
             }
         }
     }
