@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class Solicitacao {
-
     private UUID id;
     private CategoriaSolicitacao categoria;
     private String descricao;

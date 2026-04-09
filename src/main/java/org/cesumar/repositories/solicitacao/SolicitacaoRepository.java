@@ -1,4 +1,4 @@
-package org.cesumar.repositories;
+package org.cesumar.repositories.solicitacao;
 
 import org.cesumar.db.DatabaseConfig;
 import org.cesumar.models.solicitacao.CategoriaSolicitacao;
@@ -89,22 +89,19 @@ public class SolicitacaoRepository {
         );
     }
 
-    public List<Solicitacao> listar(Optional<UUID> solicitanteId) {
-
+    public List<Solicitacao> listar(UUID solicitanteId) {
         String baseSql = "SELECT * FROM solicitacao";
         List<Solicitacao> lista = new ArrayList<>();
 
-        boolean filtrar = solicitanteId.isPresent();
-
-        String sql = filtrar
+        String sql = solicitanteId != null
                 ? baseSql + " WHERE solicitante = ?"
                 : baseSql;
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            if (filtrar) {
-                ps.setObject(1, solicitanteId.get());
+            if (solicitanteId != null) {
+                ps.setObject(1, solicitanteId);
             }
 
             ResultSet rs = ps.executeQuery();

@@ -4,7 +4,7 @@ import org.cesumar.db.DatabaseConfig;
 import org.cesumar.models.solicitacao.CategoriaSolicitacao;
 import org.cesumar.models.solicitacao.DTOs.SolicitacaoRequest;
 import org.cesumar.models.solicitacao.Solicitacao;
-import org.cesumar.repositories.SolicitacaoRepository;
+import org.cesumar.repositories.solicitacao.SolicitacaoRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +24,7 @@ public class Main {
                 null,
                 "Centro",
                 solicitanteId,
-                false
+                true
         );
 
         // 3. save
@@ -47,11 +47,11 @@ public class Main {
         }
 
         // 5. listar sem filtro
-        List<Solicitacao> all = repo.listar(Optional.empty());
+        List<Solicitacao> all = repo.listar(null);
         System.out.println("Total registros: " + all.size());
 
         // 6. listar com filtro
-        List<Solicitacao> filtrados = repo.listar(Optional.of(solicitanteId));
+        List<Solicitacao> filtrados = repo.listar(solicitanteId);
         System.out.println("Filtrados: " + filtrados.size());
 
         if (filtrados.isEmpty()) {
@@ -70,12 +70,12 @@ public class Main {
 
         Solicitacao saved1 = null;
         try {
-            saved1 = repo.save(req);
+            saved1 = repo.save(anonReq);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
-        List<Solicitacao> anonList = repo.listar(Optional.empty());
+        List<Solicitacao> anonList = repo.listar(null);
 
         long anonCount = anonList.stream()
                 .filter(Solicitacao::isAnonima)
