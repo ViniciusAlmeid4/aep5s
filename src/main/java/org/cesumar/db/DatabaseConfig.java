@@ -31,6 +31,18 @@ public class DatabaseConfig {
                             data_criacao TIMESTAMP
                         )
                     """);
+
+            stmt.execute("""
+                    CREATE TABLE IF NOT EXISTS usuario (
+                        id UUID PRIMARY KEY,
+                        nome VARCHAR(255) NOT NULL,
+                        idade BIGINT,
+                        logradouro VARCHAR(255),
+                        numero_logradouro VARCHAR(50),
+                        cep VARCHAR(20)
+                    )
+                """);
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
