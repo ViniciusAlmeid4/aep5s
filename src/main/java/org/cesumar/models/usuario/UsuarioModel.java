@@ -1,4 +1,4 @@
-package org.cesumar.models.solicitacao;
+package org.cesumar.models.usuario;
 
 import java.util.UUID;
 
