@@ -74,9 +74,6 @@ public class SolicitacaoRequest {
         if (categoria == null) throw new IllegalArgumentException("Categoria obrigatória");
         if (descricao == null || descricao.isBlank()) throw new IllegalArgumentException("Descrição obrigatória");
         if (localizacao == null || localizacao.isBlank()) throw new IllegalArgumentException("Localização obrigatória");
-
-        if (!isAnonima && solicitante == null) {
-            throw new IllegalArgumentException("Nome obrigatório para solicitações identificadas");
-        }
+        if (solicitante == null) throw new IllegalArgumentException("Solicitante obrigatório");
     }
 }

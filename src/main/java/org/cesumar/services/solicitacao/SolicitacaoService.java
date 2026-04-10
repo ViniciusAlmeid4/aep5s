@@ -17,12 +17,8 @@ public class SolicitacaoService {
     private final SolicitacaoStatusRepository statusRepo = new SolicitacaoStatusRepository();
 
     public Solicitacao criarSolicitacao(SolicitacaoRequest req) throws Exception {
-        validar(req);
-
-        // 1. cria solicitacao
         Solicitacao solicitacao = solicitacaoRepo.save(req);
 
-        // 2. cria status inicial automaticamente
         statusRepo.save(new SolicitacaoStatusRequest(
                 SituacaoSolicitacaoStatus.ABERTO,
                 solicitacao.getId(),
@@ -39,15 +35,5 @@ public class SolicitacaoService {
 
     public List<Solicitacao> listar(UUID solicitanteId) {
         return solicitacaoRepo.listar(solicitanteId);
-    }
-
-    private void validar(SolicitacaoRequest req) {
-        if (req.getDescricao() == null || req.getDescricao().isBlank()) {
-            throw new IllegalArgumentException("Descrição obrigatória");
-        }
-
-        if (!req.isAnonima() && req.getSolicitante() == null) {
-            throw new IllegalArgumentException("Solicitante obrigatório quando não for anônimo");
-        }
     }
 }
