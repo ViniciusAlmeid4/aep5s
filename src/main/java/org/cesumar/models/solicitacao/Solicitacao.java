@@ -1,6 +1,9 @@
 package org.cesumar.models.solicitacao;
 
+import org.cesumar.models.solicitacaoStatus.SolicitacaoStatus;
+
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,6 +16,17 @@ public class Solicitacao {
     private UUID solicitante; // null se anônimo
     private LocalDateTime dtCriacao;
     private Boolean isAnonima;
+
+    // ✅ NEW: histórico de status
+    private List<SolicitacaoStatus> historicoStatus;
+
+    public List<SolicitacaoStatus> getHistoricoStatus() {
+        return historicoStatus;
+    }
+
+    public void setHistoricoStatus(List<SolicitacaoStatus> historicoStatus) {
+        this.historicoStatus = historicoStatus;
+    }
 
     public Solicitacao(
             UUID id,
@@ -85,7 +99,7 @@ public class Solicitacao {
     }
 
     public void setSolicitante(UUID solicitante) {
-        this.solicitante = this.solicitante;
+        this.solicitante = solicitante;
     }
 
     public LocalDateTime getDtCriacao() {

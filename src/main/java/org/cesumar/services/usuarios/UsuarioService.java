@@ -1,7 +1,7 @@
 package org.cesumar.services.usuarios;
 
 import org.cesumar.models.usuario.UsuarioModel;
-import org.cesumar.repositories.usuario.UsuarioRepository;
+import org.cesumar.repositories.usuarios.UsuarioRepository;
 
 import java.util.List;
 import java.util.Optional;

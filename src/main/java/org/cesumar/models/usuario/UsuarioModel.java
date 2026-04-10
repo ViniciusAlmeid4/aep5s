@@ -6,12 +6,12 @@ public class UsuarioModel {
 
     private UUID id;
     private String nome;
-    private Long idade;
+    private Integer idade;
     private String logradouro;
     private String numeroLogradouro;
     private String cep;
 
-    public UsuarioModel(UUID id, String nome, Long idade, String logradouro, String numeroLogradouro, String cep) {
+    public UsuarioModel(UUID id, String nome, Integer idade, String logradouro, String numeroLogradouro, String cep) {
         this.id = id;
         this.nome = nome;
         this.idade = idade;
@@ -36,11 +36,11 @@ public class UsuarioModel {
         this.nome = nome;
     }
 
-    public Long getIdade() {
+    public Integer getIdade() {
         return idade;
     }
 
-    public void setIdade(Long idade) {
+    public void setIdade(Integer idade) {
         this.idade = idade;
     }
 

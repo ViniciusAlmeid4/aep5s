@@ -4,6 +4,8 @@ import org.cesumar.db.DatabaseConfig;
 import org.cesumar.models.solicitacao.CategoriaSolicitacao;
 import org.cesumar.models.solicitacao.DTOs.SolicitacaoRequest;
 import org.cesumar.models.solicitacao.Solicitacao;
+import org.cesumar.models.solicitacaoStatus.SolicitacaoStatus;
+import org.cesumar.repositories.solicitacaoStatusRepository.SolicitacaoStatusRepository;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -13,6 +15,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SolicitacaoRepository {
+    private final SolicitacaoStatusRepository statusRepo = new SolicitacaoStatusRepository();
+
     public Solicitacao save(SolicitacaoRequest s) throws Exception {
         String sql = """
                     INSERT INTO solicitacao (
@@ -66,7 +70,15 @@ public class SolicitacaoRepository {
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
-                return Optional.of(map(rs));
+                Solicitacao solicitacao = map(rs);
+
+                // ✅ carregar histórico
+                List<SolicitacaoStatus> historico =
+                        statusRepo.listarPorSolicitacao(id);
+
+                solicitacao.setHistoricoStatus(historico);
+
+                return Optional.of(solicitacao);
             }
 
             return Optional.empty();
@@ -115,5 +127,17 @@ public class SolicitacaoRepository {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public List<Solicitacao> listarComStatus(UUID solicitanteId) {
+        List<Solicitacao> lista = listar(solicitanteId);
+
+        for (Solicitacao s : lista) {
+            List<SolicitacaoStatus> historico = statusRepo.listarPorSolicitacao(s.getId());
+
+            s.setHistoricoStatus(historico);
+        }
+
+        return lista;
     }
 }

@@ -19,6 +19,18 @@ public class DatabaseConfig {
         try (
                 Statement stmt = getConnection().createStatement();
         ) {
+
+            stmt.execute("""
+                        CREATE TABLE IF NOT EXISTS usuarios (
+                            id UUID PRIMARY KEY,
+                            nome VARCHAR(255) NOT NULL,
+                            idade INT,
+                            logradouro VARCHAR(255),
+                            numero_logradouro VARCHAR(50),
+                            cep VARCHAR(20)
+                        )
+                    """);
+
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS solicitacao (
                             id UUID PRIMARY KEY,
@@ -28,20 +40,31 @@ public class DatabaseConfig {
                             localizacao VARCHAR(255),
                             anonima BOOLEAN,
                             solicitante UUID,
-                            data_criacao TIMESTAMP
+                            data_criacao TIMESTAMP,
+                            CONSTRAINT fk_solicitacao_solicitante
+                                    FOREIGN KEY (solicitante)
+                                    REFERENCES usuarios(id)
+                                    ON DELETE SET NULL
                         )
                     """);
 
             stmt.execute("""
-                    CREATE TABLE IF NOT EXISTS usuario (
-                        id UUID PRIMARY KEY,
-                        nome VARCHAR(255) NOT NULL,
-                        idade BIGINT,
-                        logradouro VARCHAR(255),
-                        numero_logradouro VARCHAR(50),
-                        cep VARCHAR(20)
-                    )
-                """);
+                        CREATE TABLE IF NOT EXISTS solicitacao_status (
+                            id INT PRIMARY KEY AUTO_INCREMENT,
+                            situacao ENUM('ABERTO', 'TRIAGEM', 'EM_EXECUCAO', 'RESOLVIDO', 'ENCERRADO'),
+                            solicitacao UUID,
+                            responsavel UUID,
+                            data_criacao TIMESTAMP,
+                            CONSTRAINT fk_status_solicitacao
+                                FOREIGN KEY (solicitacao)
+                                REFERENCES solicitacao(id)
+                                ON DELETE CASCADE,
+                            CONSTRAINT fk_status_responsavel
+                                FOREIGN KEY (responsavel)
+                                REFERENCES usuarios(id)
+                                ON DELETE SET NULL
+                        );
+                    """);
 
         } catch (Exception e) {
             throw new RuntimeException(e);

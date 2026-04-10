@@ -1,4 +1,4 @@
-package org.cesumar.repositories.usuario;
+package org.cesumar.repositories.usuarios;
 
 import org.cesumar.db.DatabaseConfig;
 import org.cesumar.models.usuario.UsuarioModel;
@@ -13,7 +13,7 @@ public class UsuarioRepository {
 
     public UsuarioModel save(UsuarioModel u) throws Exception {
         String sql = """
-                INSERT INTO usuario (
+                INSERT INTO usuarios (
                     id, nome, idade, logradouro, numero_logradouro, cep
                 ) VALUES (?, ?, ?, ?, ?, ?)
                 """;
@@ -48,7 +48,7 @@ public class UsuarioRepository {
     }
 
     public Optional<UsuarioModel> buscarPorId(UUID id) {
-        String sql = "SELECT * FROM usuario WHERE id = ?";
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -69,7 +69,7 @@ public class UsuarioRepository {
     }
 
     public List<UsuarioModel> listar() {
-        String sql = "SELECT * FROM usuario";
+        String sql = "SELECT * FROM usuarios";
         List<UsuarioModel> lista = new ArrayList<>();
 
         try (Connection conn = DatabaseConfig.getConnection();
@@ -89,7 +89,7 @@ public class UsuarioRepository {
     }
 
     public void deletar(UUID id) {
-        String sql = "DELETE FROM usuario WHERE id = ?";
+        String sql = "DELETE FROM usuarios WHERE id = ?";
 
         try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -104,7 +104,7 @@ public class UsuarioRepository {
 
     public UsuarioModel atualizar(UsuarioModel u) {
         String sql = """
-                UPDATE usuario
+                UPDATE usuarios
                 SET nome = ?, idade = ?, logradouro = ?, numero_logradouro = ?, cep = ?
                 WHERE id = ?
                 """;
@@ -136,7 +136,7 @@ public class UsuarioRepository {
         return new UsuarioModel(
                 (UUID) rs.getObject("id"),
                 rs.getString("nome"),
-                rs.getLong("idade"),
+                rs.getInt("idade"),
                 rs.getString("logradouro"),
                 rs.getString("numero_logradouro"),
                 rs.getString("cep")
