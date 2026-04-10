@@ -11,60 +11,69 @@ public class UsuarioModel {
     private String numeroLogradouro;
     private String cep;
 
-    public UsuarioModel(UUID id, String nome, Integer idade, String logradouro, String numeroLogradouro, String cep) {
+    private String email;
+    private String senha;
+    private Role role;
+
+    public UsuarioModel(
+            UUID id,
+            String nome,
+            Integer idade,
+            String logradouro,
+            String numeroLogradouro,
+            String cep,
+            String email,
+            String senha,
+            Role role
+    ) {
         this.id = id;
         this.nome = nome;
         this.idade = idade;
         this.logradouro = logradouro;
         this.numeroLogradouro = numeroLogradouro;
         this.cep = cep;
+        this.email = email;
+        this.senha = senha;
+        this.role = role;
     }
 
     public UUID getId() {
         return id;
     }
 
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
     public String getNome() {
         return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public Integer getIdade() {
         return idade;
     }
 
-    public void setIdade(Integer idade) {
-        this.idade = idade;
-    }
-
     public String getLogradouro() {
         return logradouro;
-    }
-
-    public void setLogradouro(String logradouro) {
-        this.logradouro = logradouro;
     }
 
     public String getNumeroLogradouro() {
         return numeroLogradouro;
     }
 
-    public void setNumeroLogradouro(String numeroLogradouro) {
-        this.numeroLogradouro = numeroLogradouro;
-    }
-
     public String getCep() {
         return cep;
     }
 
-    public void setCep(String cep) {
-        this.cep = cep;
+    public String getEmail() {
+        return email;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 }

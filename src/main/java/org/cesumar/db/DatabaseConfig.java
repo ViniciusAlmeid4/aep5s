@@ -23,12 +23,15 @@ public class DatabaseConfig {
             stmt.execute("""
                         CREATE TABLE IF NOT EXISTS usuarios (
                             id UUID PRIMARY KEY,
-                            nome VARCHAR(255) NOT NULL,
+                            nome VARCHAR(100),
                             idade INT,
                             logradouro VARCHAR(255),
                             numero_logradouro VARCHAR(50),
-                            cep VARCHAR(20)
-                        )
+                            cep VARCHAR(20),
+                            email VARCHAR(150) UNIQUE,
+                            senha VARCHAR(255),
+                            role VARCHAR(20)
+                        );
                     """);
 
             stmt.execute("""

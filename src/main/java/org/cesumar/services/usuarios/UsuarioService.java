@@ -5,63 +5,64 @@ import org.cesumar.repositories.usuarios.UsuarioRepository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 public class UsuarioService {
 
-    private final UsuarioRepository repository;
-
-    public UsuarioService() {
-        this.repository = new UsuarioRepository();
-    }
+    private final UsuarioRepository repository = new UsuarioRepository();
 
     public UsuarioModel criarUsuario(UsuarioModel usuario) throws Exception {
-        validarUsuario(usuario);
+        validar(usuario);
+
+        repository.buscarPorEmail(usuario.getEmail())
+                .ifPresent(u -> {
+                    throw new IllegalArgumentException("Email já cadastrado.");
+                });
+
         return repository.save(usuario);
     }
 
-    public Optional<UsuarioModel> buscarPorId(UUID id) {
-        return repository.buscarPorId(id);
+    public Optional<UsuarioModel> login(String email, String senha) {
+        Optional<UsuarioModel> user = repository.buscarPorEmail(email);
+
+        if (user.isPresent() && user.get().getSenha().equals(senha)) {
+            return user;
+        }
+
+        return Optional.empty();
+    }
+
+    public Optional<UsuarioModel> buscarPorEmail(String email) {
+        return repository.buscarPorEmail(email);
     }
 
     public List<UsuarioModel> listar() {
         return repository.listar();
     }
 
-    public UsuarioModel atualizar(UsuarioModel usuario) {
-        if (usuario.getId() == null) {
-            throw new IllegalArgumentException("ID do usuário é obrigatório para atualização.");
-        }
-
-        validarUsuario(usuario);
-
-        return repository.atualizar(usuario);
-    }
-
-    public void deletar(UUID id) {
+    public void deletar(java.util.UUID id) {
         repository.deletar(id);
     }
 
-    private void validarUsuario(UsuarioModel usuario) {
+    private void validar(UsuarioModel u) {
 
-        if (usuario.getNome() == null || usuario.getNome().isBlank()) {
-            throw new IllegalArgumentException("Nome é obrigatório.");
+        if (u.getNome() == null || u.getNome().isBlank()) {
+            throw new IllegalArgumentException("Nome obrigatório");
         }
 
-        if (usuario.getIdade() != null && usuario.getIdade() < 0) {
-            throw new IllegalArgumentException("Idade não pode ser negativa.");
+        if (u.getEmail() == null || u.getEmail().isBlank()) {
+            throw new IllegalArgumentException("Email obrigatório");
         }
 
-        if (usuario.getCep() == null || usuario.getCep().isBlank()) {
-            throw new IllegalArgumentException("CEP é obrigatório.");
+        if (u.getSenha() == null || u.getSenha().isBlank()) {
+            throw new IllegalArgumentException("Senha obrigatória");
         }
 
-        if (usuario.getLogradouro() == null || usuario.getLogradouro().isBlank()) {
-            throw new IllegalArgumentException("Logradouro é obrigatório.");
+        if (u.getIdade() != null && u.getIdade() < 0) {
+            throw new IllegalArgumentException("Idade inválida");
         }
 
-        if (usuario.getNumeroLogradouro() == null || usuario.getNumeroLogradouro().isBlank()) {
-            throw new IllegalArgumentException("Número do logradouro é obrigatório.");
+        if (u.getRole() == null) {
+            throw new IllegalArgumentException("Role obrigatória");
         }
     }
 }

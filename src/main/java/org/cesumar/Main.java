@@ -4,139 +4,229 @@ import org.cesumar.db.DatabaseConfig;
 import org.cesumar.models.solicitacao.CategoriaSolicitacao;
 import org.cesumar.models.solicitacao.DTOs.SolicitacaoRequest;
 import org.cesumar.models.solicitacao.Solicitacao;
-import org.cesumar.models.solicitacaoStatus.DTOs.SolicitacaoStatusRequest;
-import org.cesumar.models.solicitacaoStatus.SituacaoSolicitacaoStatus;
+import org.cesumar.models.usuario.Role;
 import org.cesumar.models.usuario.UsuarioModel;
-import org.cesumar.repositories.solicitacao.SolicitacaoRepository;
-import org.cesumar.repositories.solicitacaoStatusRepository.SolicitacaoStatusRepository;
-import org.cesumar.repositories.usuarios.UsuarioRepository;
+import org.cesumar.services.solicitacao.SolicitacaoService;
+import org.cesumar.services.usuarios.UsuarioService;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
+import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+
+    private static final Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) throws Exception {
         DatabaseConfig.init();
 
-        org.cesumar.repositories.usuarios.UsuarioRepository usuarioRepo = new UsuarioRepository();
-        SolicitacaoRepository solicitacaoRepo = new SolicitacaoRepository();
-        SolicitacaoStatusRepository statusRepo = new SolicitacaoStatusRepository();
+        UsuarioService usuarioService = new UsuarioService();
+        SolicitacaoService solicitacaoService = new SolicitacaoService();
 
-        // -----------------------------------
-        // 1. Criar usuário
-        // -----------------------------------
-        UsuarioModel usuario;
+        criarUsuarioPadrao(usuarioService);
+
+        System.out.println("=== SISTEMA ===");
+
+        while (true) {
+            UsuarioModel usuario = login(usuarioService);
+
+            if (usuario == null) {
+                System.out.println("Falha no login.");
+                continue; // volta pro login
+            }
+
+            System.out.println("Logado como: " + usuario.getNome() + " (" + usuario.getRole() + ")");
+
+            boolean logado = true;
+
+            while (logado) {
+                switch (usuario.getRole()) {
+                    case CIDADAO -> logado = menuCidadao(usuario, solicitacaoService);
+                    case ATENDENTE -> logado = menuAtendente(solicitacaoService);
+                    case ADMIN -> logado = menuAdmin(usuarioService);
+                }
+            }
+
+            System.out.println("Logout realizado.\n");
+        }
+    }
+
+    private static UsuarioModel login(UsuarioService service) {
+        System.out.print("\nEmail: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        Optional<UsuarioModel> user = service.login(email, senha);
+        return user.orElse(null);
+    }
+
+    private static boolean menuCidadao(UsuarioModel user, SolicitacaoService service) throws Exception {
+        System.out.println("\n=== MENU CIDADAO ===");
+        System.out.println("1. Criar solicitação");
+        System.out.println("2. Listar minhas solicitações");
+        System.out.println("9. Logout");
+        System.out.println("0. Sair");
+
+        int op = lerInt();
+
+        switch (op) {
+            case 1 -> criarSolicitacao(user, service);
+            case 2 -> listarSolicitacoes(user, service);
+            case 9 -> {
+                return false; // logout
+            }
+            case 0 -> System.exit(0);
+        }
+
+        return true;
+    }
+
+    private static boolean menuAtendente(SolicitacaoService service) {
+        System.out.println("\n=== MENU ATENDENTE ===");
+        System.out.println("1. Listar todas solicitações");
+        System.out.println("9. Logout");
+        System.out.println("0. Sair");
+
+        int op = lerInt();
+
+        switch (op) {
+            case 1 -> {
+                List<Solicitacao> lista = service.listar(null);
+                lista.forEach(s ->
+                        System.out.println(s.getId() + " - " + s.getDescricao())
+                );
+            }
+            case 9 -> {
+                return false;
+            }
+            case 0 -> System.exit(0);
+        }
+
+        return true;
+    }
+
+    private static boolean menuAdmin(UsuarioService service) throws Exception {
+        System.out.println("\n=== MENU ADMIN ===");
+        System.out.println("1. Criar usuário");
+        System.out.println("2. Listar usuários");
+        System.out.println("9. Logout");
+        System.out.println("0. Sair");
+
+        int op = lerInt();
+
+        switch (op) {
+            case 1 -> criarUsuario(service);
+            case 2 -> listarUsuarios(service);
+            case 9 -> {
+                return false;
+            }
+            case 0 -> System.exit(0);
+        }
+
+        return true;
+    }
+
+    private static void criarUsuarioPadrao(UsuarioService service) {
+        String email = "admin@admin.com";
+
         try {
-            usuario = usuarioRepo.save(new UsuarioModel(
+            if (service.buscarPorEmail(email).isPresent()) {
+                return;
+            }
+
+            service.criarUsuario(new UsuarioModel(
                     null,
-                    "João",
-                    25,
-                    "Rua A",
-                    "123",
-                    "87000-000"
+                    "Administrador",
+                    30,
+                    "Sistema",
+                    "0",
+                    "00000-000",
+                    email,
+                    "admin",
+                    Role.ADMIN
             ));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+
+            System.out.println("Usuário padrão criado: admin@admin.com / admin");
+
+        } catch (Exception ignored) {}
+    }
+
+    private static void criarSolicitacao(UsuarioModel user, SolicitacaoService service) throws Exception {
+        System.out.print("Descrição: ");
+        String desc = scanner.nextLine();
+
+        System.out.print("Localização: ");
+        String local = scanner.nextLine();
+
+        Solicitacao s = service.criarSolicitacao(new SolicitacaoRequest(
+                CategoriaSolicitacao.INFRAESTRUTURA,
+                desc,
+                null,
+                local,
+                user.getId(),
+                false
+        ));
+
+        System.out.println("Criado com ID: " + s.getId());
+    }
+
+    private static void listarSolicitacoes(UsuarioModel user, SolicitacaoService service) {
+        List<Solicitacao> lista = service.listar(user.getId());
+
+        if (lista.isEmpty()) {
+            System.out.println("Nenhuma solicitação encontrada.");
+            return;
         }
 
-        System.out.println("Usuario criado: " + usuario.getId());
+        lista.forEach(s ->
+                System.out.println(s.getId() + " - " + s.getDescricao())
+        );
+    }
 
-        // -----------------------------------
-        // 2. Criar solicitação vinculada ao usuário
-        // -----------------------------------
-        Solicitacao solicitacao;
+    private static void criarUsuario(UsuarioService service) throws Exception {
+        System.out.print("Nome: ");
+        String nome = scanner.nextLine();
+
+        System.out.print("Email: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Senha: ");
+        String senha = scanner.nextLine();
+
+        System.out.print("Idade: ");
+        Integer idade = lerInt();
+
+        System.out.print("Role (ADMIN, ATENDENTE, CIDADAO): ");
+        Role role = Role.valueOf(scanner.nextLine().toUpperCase());
+
+        UsuarioModel u = service.criarUsuario(new UsuarioModel(
+                null,
+                nome,
+                idade,
+                "Rua X",
+                "123",
+                "00000-000",
+                email,
+                senha,
+                role
+        ));
+
+        System.out.println("Usuário criado com ID: " + u.getId());
+    }
+
+    private static void listarUsuarios(UsuarioService service) {
+        service.listar().forEach(u ->
+                System.out.println(u.getId() + " - " + u.getNome() + " (" + u.getRole() + ")")
+        );
+    }
+
+    private static int lerInt() {
         try {
-            solicitacao = solicitacaoRepo.save(new SolicitacaoRequest(
-                    CategoriaSolicitacao.INFRAESTRUTURA,
-                    "Buraco na rua",
-                    null,
-                    "Centro",
-                    usuario.getId(),
-                    false
-            ));
+            return Integer.parseInt(scanner.nextLine());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            return -1;
         }
-
-        System.out.println("Solicitacao criada: " + solicitacao.getId());
-
-        // -----------------------------------
-        // 3. Criar histórico de status
-        // -----------------------------------
-        statusRepo.save(new SolicitacaoStatusRequest(
-                SituacaoSolicitacaoStatus.ABERTO,
-                solicitacao.getId(),
-                usuario.getId(),
-                null
-        ));
-
-        statusRepo.save(new SolicitacaoStatusRequest(
-                SituacaoSolicitacaoStatus.TRIAGEM,
-                solicitacao.getId(),
-                usuario.getId(),
-                null
-        ));
-
-        statusRepo.save(new SolicitacaoStatusRequest(
-                SituacaoSolicitacaoStatus.RESOLVIDO,
-                solicitacao.getId(),
-                usuario.getId(),
-                null
-        ));
-
-        // -----------------------------------
-        // 4. Buscar solicitação com histórico
-        // -----------------------------------
-        Optional<Solicitacao> found = solicitacaoRepo.buscarPorId(solicitacao.getId());
-
-        if (found.isEmpty()) {
-            throw new RuntimeException("Erro: não encontrou solicitação");
-        }
-
-        Solicitacao s = found.get();
-
-        System.out.println("Descricao: " + s.getDescricao());
-
-        List<?> historico = s.getHistoricoStatus();
-
-        System.out.println("Qtd status: " + historico.size());
-
-        if (historico.size() != 3) {
-            throw new RuntimeException("Erro: histórico incorreto");
-        }
-
-        // -----------------------------------
-        // 5. Validar ordenação
-        // -----------------------------------
-        var primeiro = s.getHistoricoStatus().get(0);
-
-        System.out.println("Primeiro status: " + primeiro.getSituacao());
-
-        if (primeiro.getSituacao() != SituacaoSolicitacaoStatus.ABERTO) {
-            throw new RuntimeException("Erro: ordem incorreta");
-        }
-
-        System.out.println("✔ Histórico OK");
-
-        // -----------------------------------
-        // 6. Testar FK ON DELETE SET NULL
-        // -----------------------------------
-        usuarioRepo.deletar(usuario.getId());
-
-        Optional<Solicitacao> afterDelete = solicitacaoRepo.buscarPorId(solicitacao.getId());
-
-        if (afterDelete.isEmpty()) {
-            throw new RuntimeException("Erro: solicitacao sumiu após deletar usuário");
-        }
-
-        System.out.println("Usuario deletado, solicitacao ainda existe ✔");
-
-        // -----------------------------------
-        // 7. Testar FK CASCADE (status)
-        // -----------------------------------
-        // (Opcional: você pode deletar a solicitacao direto no banco)
-
-        System.out.println("✔ TESTES COMPLETOS OK");
     }
 }
