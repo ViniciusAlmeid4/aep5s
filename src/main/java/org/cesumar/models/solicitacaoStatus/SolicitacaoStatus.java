@@ -9,6 +9,7 @@ public class SolicitacaoStatus {
     private SituacaoSolicitacaoStatus situacao;
     private UUID solicitacao;
     private UUID responsavel;
+    private String descricao; // ✅ novo campo
     private LocalDateTime dataCriacao;
 
     public SolicitacaoStatus(
@@ -16,12 +17,14 @@ public class SolicitacaoStatus {
             SituacaoSolicitacaoStatus situacao,
             UUID solicitacao,
             UUID responsavel,
+            String descricao,
             LocalDateTime dataCriacao
     ) {
         this.id = id;
         this.situacao = situacao;
         this.solicitacao = solicitacao;
         this.responsavel = responsavel;
+        this.descricao = descricao;
         this.dataCriacao = dataCriacao;
     }
 
@@ -55,6 +58,14 @@ public class SolicitacaoStatus {
 
     public void setResponsavel(UUID responsavel) {
         this.responsavel = responsavel;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public LocalDateTime getDataCriacao() {

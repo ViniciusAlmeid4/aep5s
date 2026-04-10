@@ -13,11 +13,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class SolicitacaoStatusRepository {
+
     public SolicitacaoStatus save(SolicitacaoStatusRequest s) {
         String sql = """
-                    INSERT INTO solicitacao_status (
-                        situacao, solicitacao, responsavel, data_criacao
-                    ) VALUES (?, ?, ?, ?)
+                INSERT INTO solicitacao_status (
+                    situacao, solicitacao, responsavel, descricao, data_criacao
+                ) VALUES (?, ?, ?, ?, ?)
                 """;
 
         LocalDateTime agora = LocalDateTime.now();
@@ -28,19 +29,20 @@ public class SolicitacaoStatusRepository {
             ps.setString(1, s.getSituacao().name());
             ps.setObject(2, s.getSolicitacao());
             ps.setObject(3, s.getResponsavel()); // pode ser null
-            ps.setTimestamp(4, Timestamp.valueOf(agora));
+            ps.setString(4, s.getDescricao());   // pode ser null
+            ps.setTimestamp(5, Timestamp.valueOf(agora));
 
             ps.executeUpdate();
 
             ResultSet keys = ps.getGeneratedKeys();
             if (keys.next()) {
                 int id = keys.getInt(1);
-
                 return new SolicitacaoStatus(
                         id,
                         s.getSituacao(),
                         s.getSolicitacao(),
                         s.getResponsavel(),
+                        s.getDescricao(),
                         agora
                 );
             }
@@ -59,7 +61,6 @@ public class SolicitacaoStatusRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-
             ResultSet rs = ps.executeQuery();
 
             if (rs.next()) {
@@ -75,9 +76,9 @@ public class SolicitacaoStatusRepository {
 
     public List<SolicitacaoStatus> listarPorSolicitacao(UUID solicitacaoId) {
         String sql = """
-                    SELECT * FROM solicitacao_status
-                    WHERE solicitacao = ?
-                    ORDER BY data_criacao ASC
+                SELECT * FROM solicitacao_status
+                WHERE solicitacao = ?
+                ORDER BY data_criacao ASC
                 """;
 
         List<SolicitacaoStatus> lista = new ArrayList<>();
@@ -86,7 +87,6 @@ public class SolicitacaoStatusRepository {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setObject(1, solicitacaoId);
-
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -105,7 +105,8 @@ public class SolicitacaoStatusRepository {
                 rs.getInt("id"),
                 SituacaoSolicitacaoStatus.valueOf(rs.getString("situacao")),
                 (UUID) rs.getObject("solicitacao"),
-                (UUID) rs.getObject("responsavel"), // nullable
+                (UUID) rs.getObject("responsavel"),
+                rs.getString("descricao"),             // ✅ novo campo
                 rs.getTimestamp("data_criacao").toLocalDateTime()
         );
     }

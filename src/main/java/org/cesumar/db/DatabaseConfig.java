@@ -57,6 +57,7 @@ public class DatabaseConfig {
                             situacao ENUM('ABERTO', 'TRIAGEM', 'EM_EXECUCAO', 'RESOLVIDO', 'ENCERRADO'),
                             solicitacao UUID,
                             responsavel UUID,
+                            descricao VARCHAR(255),
                             data_criacao TIMESTAMP,
                             CONSTRAINT fk_status_solicitacao
                                 FOREIGN KEY (solicitacao)

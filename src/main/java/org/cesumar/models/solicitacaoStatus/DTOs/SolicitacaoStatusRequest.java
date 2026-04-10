@@ -9,18 +9,18 @@ public class SolicitacaoStatusRequest {
     private SituacaoSolicitacaoStatus situacao;
     private UUID solicitacao;
     private UUID responsavel;
-    private java.time.LocalDateTime dataCriacao;
+    private String descricao; // ✅ campo correto, alinhado com o banco
 
     public SolicitacaoStatusRequest(
             SituacaoSolicitacaoStatus situacao,
             UUID solicitacao,
             UUID responsavel,
-            java.time.LocalDateTime dataCriacao
+            String descricao
     ) {
         this.situacao = situacao;
         this.solicitacao = solicitacao;
         this.responsavel = responsavel;
-        this.dataCriacao = dataCriacao;
+        this.descricao = descricao;
         this.validar();
     }
 
@@ -48,12 +48,12 @@ public class SolicitacaoStatusRequest {
         this.responsavel = responsavel;
     }
 
-    public java.time.LocalDateTime getDataCriacao() {
-        return dataCriacao;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setDataCriacao(java.time.LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
     public void validar() {
