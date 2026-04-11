@@ -88,7 +88,9 @@ public class Solicitacao {
         this.localizacao = localizacao;
     }
 
-    public Optional<UUID> getSolicitante() {
+    public UUID getSolicitante() {return solicitante}
+
+    public Optional<UUID> getSafeSolicitante() {
         Optional<UUID> sol;
         if (!isAnonima) {
             sol = Optional.ofNullable(solicitante);
