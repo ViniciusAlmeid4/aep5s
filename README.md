@@ -100,7 +100,3 @@ String insertData = "INSERT INTO aluno (nome, matricula) VALUES "
 ```
 
 ---
-
-## Autor
-
-Desenvolvido por **Vinicius Almeida** — Unicesumar, 5º semestre.
