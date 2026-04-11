@@ -88,7 +88,7 @@ public class Solicitacao {
         this.localizacao = localizacao;
     }
 
-    public UUID getSolicitante() {return solicitante}
+    public UUID getSolicitante() {return solicitante;}
 
     public Optional<UUID> getSafeSolicitante() {
         Optional<UUID> sol;
