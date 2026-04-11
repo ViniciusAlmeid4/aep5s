@@ -1,4 +1,4 @@
-# aep5s
+# AEP-5S-1B
 
 Projeto acadêmico desenvolvido para a AEP do 5º semestre na Unicesumar. Aplicação Java pura com persistência em banco de dados relacional H2.
 
