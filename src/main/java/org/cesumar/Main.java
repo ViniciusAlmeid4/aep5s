@@ -210,7 +210,7 @@ public class Main {
         System.out.println("Categoria:   " + s.getCategoria());
         System.out.println("Descrição:   " + s.getDescricao());
         System.out.println("Localização: " + s.getLocalizacao());
-        System.out.println("Anônima:     " + (s.isAnonima() ? "Sim" : "Não"));
+        System.out.println("Solicitante: " + s.getSafeSolicitante().map(UUID::toString).orElse("anônima"));
         System.out.println("Criada em:   " + s.getDtCriacao());
 
         if (s.getHistoricoStatus() != null && !s.getHistoricoStatus().isEmpty()) {
@@ -389,7 +389,7 @@ public class Main {
                     "Posto sem médico há 3 dias",
                     null,
                     "Zona 7",
-                    null,
+                    cidadao.getId(),
                     true
             ));
 
